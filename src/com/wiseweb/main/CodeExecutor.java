@@ -1,5 +1,6 @@
 package com.wiseweb.main;
 
+import com.wiseweb.entity.TACBean;
 import com.wiseweb.util.*;
 
 import java.io.File;
@@ -17,29 +18,35 @@ public class CodeExecutor {
 
     public static void main(String[] args) {
 
-        String code = "35254112631400";
+//        String code = "35254112632400";
 //        String newCode = IMEIBuilder.genCode(code);
-        String endCode = "35254122631700";
+//        String endCode = "35254112633700";
 
+        //获取所有tac
+        String[] tacs = TACBean.tacCodes;
+        //每个tac生成imei条数
+        int tacImeiCount = 12100;
         System.out.println("开始生成IMEI码...");
         long current = System.currentTimeMillis();
-        List imeis = IMEIBuilder.createIMEI(code, endCode);
+        List imeis = IMEIBuilder.createIMEIByTac(tacs, "632400", tacImeiCount);
+//        List imeis = IMEIBuilder.createIMEI(code,endCode);
         long endtime = System.currentTimeMillis();
-        long usetime = endtime-current;
-        System.out.println("imei码生成完成,"+imeis.size()+"条,共耗时"+usetime+"毫秒");
+        long usetime = endtime - current;
+        System.out.println("imei码生成完成," + imeis.size() + "条,共耗时" + usetime + "毫秒");
 
         System.out.println("开始生成mac地址...");
         current = System.currentTimeMillis();
-        List<String> macs = MACBuilder.getMacAdr("00:70:A4:00:00:00", 10000001);
+        //生成tac个数*每个tac生成imei条数
+        List<String> macs = MACBuilder.getMacAdr("00:70:A4:00:00:00", tacs.length * tacImeiCount);
         endtime = System.currentTimeMillis();
-        usetime = endtime-current;
-        System.out.println("mac地址生成完成！"+macs.size()+"条,共耗时"+usetime+"毫秒");
+        usetime = endtime - current;
+        System.out.println("mac地址生成完成！" + macs.size() + "条,共耗时" + usetime + "毫秒");
 
         System.out.println("开始写入文件...");
         current = System.currentTimeMillis();
         List exportData = new ArrayList<Map>();
         int ac = 0, ic = 0;//ios计数器;android计数器;windows phone计数器（no use）
-        for (int i = 0; i <= 10000000; i++) {
+        for (int i = 0; i < tacs.length * tacImeiCount; i++) {
             Map row = new LinkedHashMap<String, String>();
             row.put("1", i + 1);
             row.put("2", imeis.get(i));
@@ -48,7 +55,7 @@ public class CodeExecutor {
             if (ac <= 66) {
                 row.put("4", OSVersionBuilder.osType[0]);
                 ac++;
-                if(ac == 66){
+                if (ac == 66) {
                     ic = 0;
                 }
                 row.put("5", OSVersionBuilder.getAndroidVersion());
@@ -60,7 +67,7 @@ public class CodeExecutor {
             } else {
                 row.put("4", OSVersionBuilder.osType[2]);
                 row.put("5", OSVersionBuilder.getWPVersion());
-                ac=0;
+                ac = 0;
             }
 
             row.put("6", ResolutionBuilder.getResolution());
@@ -80,8 +87,8 @@ public class CodeExecutor {
         String fileName = "deviceData";
         File file = CSVUtils.createCSVFile(exportData, map, path, fileName);
         endtime = System.currentTimeMillis();
-        usetime = endtime-current;
-        System.out.println("文件写入完成,"+exportData.size()+"行,共耗时"+usetime+"毫秒");
+        usetime = endtime - current;
+        System.out.println("文件写入完成," + exportData.size() + "行,共耗时" + usetime + "毫秒");
         String fileName2 = file.getName();
         System.out.println("文件名称：" + fileName2);
     }
