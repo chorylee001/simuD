@@ -11,6 +11,10 @@ public class TACBean {
     private String brandEn;             //手机品牌 en
     private String brandZh;             //手机品牌 zh
     private String model;               //型号
+    private float weight;               //权重值
+
+    public TACBean() {
+    }
 
     public TACBean(Integer id, String tacCode, String brandEn, String model) {
         this.id = id;
@@ -57,6 +61,14 @@ public class TACBean {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public float getWeight() {
+        return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
     }
 
     public static final String[] tacCodes = {

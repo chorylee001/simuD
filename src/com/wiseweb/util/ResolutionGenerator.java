@@ -4,7 +4,7 @@ package com.wiseweb.util;
  * Created by Chory on 2017/2/7 0007.
  * 手机分辨率生成器
  */
-public class ResolutionBuilder {
+public class ResolutionGenerator {
 
     /**
      * 3.5英寸分辨率为960x640(DVGA) 像素密度326PPI（苹果 iphone4）
@@ -46,7 +46,7 @@ public class ResolutionBuilder {
      */
     public static String getResolution() {
 
-        String[] arrRes = {"960x640", "800x480", "960x540", "960*640", "1024*600", "1024*768", "1136*640", "1200*600", "1280*720", "1280*800", "1920*1080", "2048*1536","2560*1600"};
+        String[] arrRes = {"960*640", "800*480", "960*540", "960*640", "1024*600", "1024*768", "1136*640", "1200*600", "1280*720", "1280*800", "1920*1080", "2048*1536","2560*1600"};
 
         int index = (int) (1+Math.random()*10);
         return arrRes[index];

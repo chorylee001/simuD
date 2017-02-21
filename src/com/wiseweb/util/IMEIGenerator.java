@@ -1,5 +1,7 @@
 package com.wiseweb.util;
 
+import com.wiseweb.entity.TACBean;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,7 @@ import java.util.List;
  * Created by Chory on 2017/2/7 0007.
  * IMEI码生成器
  */
-public class IMEIBuilder {
+public class IMEIGenerator {
 
     /**
      * IMEI 校验码
@@ -96,20 +98,21 @@ public class IMEIBuilder {
     }
 
     /**
-     * @param tacs      arr tac
+     * @param tacs      list for tac
      * @param startCode 后七位imei码
      * @param count     每个tac生成imei个数
      * @return
      */
-    public static List<String> createIMEIByTac(String[] tacs, String startCode, int count) {
+    public static List<String> createIMEIByTac(List<TACBean> tacs, String startCode, int count) {
 
         List<String> imeis = new ArrayList<String>();
 
         try {
-            for (int i = 0; i < tacs.length; i++) {
+            for (int i = 0; i < tacs.size(); i++) {
 
                 //获取TAC
-                String tacCode = tacs[i];
+                TACBean tacBean = tacs.get(i);
+                String tacCode = tacBean.getTacCode();
                 String code = null;
                 Long currentCode = Long.parseLong(startCode);
                 for (int j = 0; j < count; j++) {

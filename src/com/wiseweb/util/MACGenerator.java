@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Chory on 2017/2/7 0007.
  * MAC地址生成器
  */
-public class MACBuilder {
+public class MACGenerator {
 
     /**
      * code生成

@@ -4,7 +4,7 @@ package com.wiseweb.util;
  * Created by Chory on 2017/2/7 0007.
  * 移动系统版本生成
  */
-public class OSVersionBuilder {
+public class OSVersionGenerator {
 
     //系统类型
     public static final String[] osType = {"android","ios","windows phone"};

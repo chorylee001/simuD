@@ -1,4 +1,4 @@
-package com.wiseweb.main;
+package com.wiseweb.action;
 
 import com.wiseweb.util.DBConnector;
 
@@ -121,9 +121,11 @@ public class InsertDepotPrice {
     private static void ruanwo(Statement stmt,int rowKey,int seadLevel,String price) throws SQLException{
 
         String insertSql;
-        insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+","+seadLevel+",3,'"+price.substring(0,price.indexOf("/"))+"')";
+        int prefix = price.indexOf("/");
+        insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+","+seadLevel+",3,'"+price.substring(0,prefix==-1?price.length():prefix)+"')";
         stmt.execute(insertSql);
-        insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+","+seadLevel+",1,'"+price.substring(price.indexOf("/")+1,price.length())+"')";
+        int prefix2 = price.indexOf("/");
+        insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+","+seadLevel+",1,'"+price.substring(prefix2==-1?price.length():prefix2+1,price.length())+"')";
         stmt.execute(insertSql);
     }
     private static void yingwo(Statement stmt,int rowKey,String price) throws SQLException {
@@ -137,11 +139,13 @@ public class InsertDepotPrice {
         while(matcher.find()){
             num++;
             if(num == 1){
-                insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+",7,1,'"+price.substring(0,price.indexOf("/"))+"')";
+                int prefix = price.indexOf("/");
+                insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+",7,1,'"+price.substring(0,prefix==-1?price.length():prefix)+"')";
                 stmt.execute(insertSql);
             }else if(num ==2){
                 lastIndex = matcher.start();
-                insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+",7,2,'"+price.substring(price.indexOf("/")+1,lastIndex)+"')";
+                int prefix = price.indexOf("/");
+                insertSql = "insert into cr_depot_price_info(depot_id,SEAT_LEVEL,BUNK,PRICE) value("+rowKey+",7,2,'"+price.substring(prefix==-1?price.length():prefix+1,lastIndex)+"')";
                 stmt.execute(insertSql);
             }
         }

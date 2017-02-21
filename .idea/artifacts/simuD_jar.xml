@@ -3,8 +3,13 @@
     <output-path>$PROJECT_DIR$/out/artifacts/simuD_jar</output-path>
     <root id="archive" name="simuD.jar">
       <element id="module-output" name="simuD" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/mysql-connector-5.1.8.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/commons-beanutils-1.9.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/web/WEB-INF/lib/org-apache-commons-logging.jar" path-in-jar="/" />
+      <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/mysql-connector-5.1.8.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/commons-beanutils-1.9.2.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/org-apache-commons-logging.jar" />
+      <element id="javaee-facet-resources" facet="simuD/web/Web" />
     </root>
   </artifact>
 </component>
