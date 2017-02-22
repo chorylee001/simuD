@@ -10,10 +10,12 @@ import java.sql.SQLException;
  */
 public class DBConnector {
 
-    public static final String url = "jdbc:mysql://127.0.0.1/cr";
+    public static final String url = "jdbc:mysql://10.1.8.189/basedb?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=TRUE";
     public static final String name = "com.mysql.jdbc.Driver";
-    public static final String user = "root";
-    public static final String password = "123123";
+    /*private static final String url="jdbc:hive://192.168.X.X:10000/default";
+    private static final String name="org.apache.Hadoop.hive.jdbc.HiveDriver";*/
+    private static final String user = "root";
+    private static final String password = "123456";
 
     private Connection conn = null;
     public PreparedStatement ps = null;

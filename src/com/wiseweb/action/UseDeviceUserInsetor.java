@@ -76,7 +76,7 @@ public class UseDeviceUserInsetor {
                 //创建连接声明
                 Statement insertStmt = conn.createStatement();
                 //插入数据sql
-                String insertSql = "insert into cr_device_use(user_id,login_time,imei) value(" + userId + ",'" + RandomUtils.getRandomDate() + "','" + IMEI + "')";
+                String insertSql = "insert into cr_device_use(user_id,login_time,imei) value(" + userId + ",'" + RandomUtils.getStringRandomDate() + "','" + IMEI + "')";
 
                 insertStmt.execute(insertSql);
                 insertStmt.close();

@@ -46,7 +46,7 @@ public class RegisterUserInsertor {
                     String realName = rs.getString("NAME");
                     String birthday = rs.getString("BIRTHDAY");
                     //插入数据sql
-                    String insertSql = "insert into cr_user(ID,username,password,certificate_number,register_time,register_ip,last_login_time,last_login_ip,login_count,realname,sex,birthday,mobile) value("+userId+",'"+userName+"','123123','"+certificateCode+"','"+getDate()+"','"+ RandomUtils.getRandomIp()+"','"+RandomUtils.getRandomDate()+"','"+ RandomUtils.getRandomIp()+"',"+ RandomUtils.randomNum()+",'"+realName+"',"+(int)(Math.random()*3)+",'"+birthday+"','"+ PhoneGenerator.getTel()+"')";
+                    String insertSql = "insert into cr_user(ID,username,password,certificate_number,register_time,register_ip,last_login_time,last_login_ip,login_count,realname,sex,birthday,mobile) value("+userId+",'"+userName+"','123123','"+certificateCode+"','"+getDate()+"','"+ RandomUtils.getRandomIp()+"','"+RandomUtils.getStringRandomDate()+"','"+ RandomUtils.getRandomIp()+"',"+ RandomUtils.randomNum()+",'"+realName+"',"+(int)(Math.random()*3)+",'"+birthday+"','"+ PhoneGenerator.getTel()+"')";
                     insertStmt.execute(insertSql);
                     count++;
                     System.out.println("正在插入第"+count+"条数据!");

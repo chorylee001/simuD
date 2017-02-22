@@ -12,6 +12,7 @@ import java.util.Random;
  */
 public class RandomUtils {
 
+    static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     /**
      * 随机生成国内IP地址
      *
@@ -91,7 +92,7 @@ public class RandomUtils {
     public static Date randomDate(String beginDate, String endDate) {
 
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return randomDate(beginDate,endDate,format);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,13 +111,22 @@ public class RandomUtils {
 
     public static java.sql.Date getRandomDate() {
 
-        return new java.sql.Date(RandomUtils.randomDate("2010-01-01 00:00:00", "2017-02-17 23:59:59").getTime());
+        return new java.sql.Date(RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59").getTime());
+    }
+    public static Date getJavaRandomDate() {
+
+        return RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59");
+    }
+
+    public static String getStringRandomDate() {
+
+        return format.format(RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59"));
     }
 
     public static String getRandomYMD(){
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(RandomUtils.randomDate("2010-01-01 00:00:00", "2017-02-17 23:59:59"));
+        return format.format(RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59"));
     }
     public static java.sql.Date getDate(){
         java.sql.Date date = new java.sql.Date(new java.util.Date().getTime());
@@ -136,12 +146,15 @@ public class RandomUtils {
     }
 
     public static void main(String[] args) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for(int i=0;i<=100;i++){
 
-        try {
-            System.out.println(randomFormatToStringByString("2017-01-01",2));
-        } catch (ParseException e) {
-            e.printStackTrace();
+            //String resulttime = format.format(getRandomDate());//构造开始日期
+            /*String resulttime = format.format(new java.sql.Date(getRandomDate().getTime()));
+            System.out.println(resulttime);*/
+            System.out.println(format.format(RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59")));
         }
+
 
     }
 

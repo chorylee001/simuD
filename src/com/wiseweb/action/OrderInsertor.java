@@ -62,7 +62,7 @@ public class OrderInsertor {
                     Integer userId = userRs.getInt("id");
                     ResultSet orderRs;
                     String orderNo = RandomUtils.getOrderNo();
-                    int row = insertStmt.executeUpdate("INSERT INTO cr_data_order (ORDER_NUMBER,USER_ID,ORDER_TIME,ORDER_STATUS,SUM_PRICE,PAYMENT,ORDER_CHANNEL,PAY_STATUS,PAY_BANK,PAY_APP) VALUES ('"+orderNo+"',"+userId+",'"+RandomUtils.getRandomDate()+"',"+(int)(Math.random()*3)+","+allPrice+","+(int)(Math.random()*8+1)+",1,"+(Math.random()>0.5?1:0)+","+(int)(Math.random()*7+1)+","+(int)(Math.random()*4+1)+")",Statement.RETURN_GENERATED_KEYS);
+                    int row = insertStmt.executeUpdate("INSERT INTO cr_data_order (ORDER_NUMBER,USER_ID,ORDER_TIME,ORDER_STATUS,SUM_PRICE,PAYMENT,ORDER_CHANNEL,PAY_STATUS,PAY_BANK,PAY_APP) VALUES ('"+orderNo+"',"+userId+",'"+RandomUtils.getStringRandomDate()+"',"+(int)(Math.random()*3)+","+allPrice+","+(int)(Math.random()*8+1)+",1,"+(Math.random()>0.5?1:0)+","+(int)(Math.random()*7+1)+","+(int)(Math.random()*4+1)+")",Statement.RETURN_GENERATED_KEYS);
 
                     Integer orderId = null;
                     orderRs = insertStmt.getGeneratedKeys();
@@ -82,7 +82,7 @@ public class OrderInsertor {
 
                         //订单详情表插入
                         Statement ODetailStmt = conn.createStatement();
-                        String insertODetailSql = "insert into cr_data_order_detail(ORDER_ID,TICKET_ID,OPERATE_TIME) values("+orderId+","+ticketId+",'"+RandomUtils.getRandomDate()+"')";
+                        String insertODetailSql = "insert into cr_data_order_detail(ORDER_ID,TICKET_ID,OPERATE_TIME) values("+orderId+","+ticketId+",'"+RandomUtils.getStringRandomDate()+"')";
                         ODetailStmt.execute(insertODetailSql);
                         ODetailStmt.close();
                     }
@@ -261,7 +261,7 @@ public class OrderInsertor {
                 if(isPolicy){
                     //保单生成
                     Statement policyStatement = conn.createStatement();
-                    String insertPolicySql = "insert into cr_data_policy(INSURANCE_ID,INSURED_NAME,CERTIFICATE_TYPE,CERTIFICATE_NUMBER,WN_ID,TICKET_ID,INSURANCE_COMPANY,INSURE_COST,INSURANCE_TYPE,INSURED_AMOUNT,INSURANCE_TIME,EFFECTIVE_TIME,INVALID_TIME) VALUES ('"+ policyNo+"','"+contactsName+"','"+ctype+"','"+cnum+"','"+wnid+"',"+ticketId+",1,"+policyPrice+",1,"+policyAmount+",'"+rideTime+"','"+rideTime+" "+startDepot.getDepartureTime()+"','"+rideTime+" "+endDepot.getArrivalTime()+"')";
+                    String insertPolicySql = "insert into SRC_INSURANCE_INFO(INSURANCE_ID,INSURED_NAME,CERTIFICATE_TYPE,CERTIFICATE_NUMBER,WN_ID,TICKET_ID,INSURANCE_COMPANY,INSURE_COST,INSURANCE_TYPE,INSURED_AMOUNT,INSURANCE_TIME,EFFECTIVE_TIME,INVALID_TIME) VALUES ('"+ policyNo+"','"+contactsName+"','"+ctype+"','"+cnum+"','"+wnid+"',"+ticketId+",1,"+policyPrice+",1,"+policyAmount+",'"+rideTime+"','"+rideTime+" "+startDepot.getDepartureTime()+"','"+rideTime+" "+endDepot.getArrivalTime()+"')";
                     policyStatement.execute(insertPolicySql);
                     System.out.println("插入"+ticketId+"条保单数据");
                     policyStatement.close();

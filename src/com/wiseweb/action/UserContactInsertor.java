@@ -95,7 +95,7 @@ public class UserContactInsertor {
                     int status = Math.random()>0.2?1:0;
                     String wnId = bean.getWnId();
                     //插入数据sql
-                    String insertSql = "insert into src_user_contacts(USER_ID,CONTACTS_NAME,CERTIFICATE_TYPE,CERTIFACATE_NUMBER,PASSENGER_TYPE,STATUS,LAST_BUYTICKET_TIME,CREATE_TIME,WN_ID) value("+userId+",'"+realName+"',"+ctype+",'"+cnum+"',"+ptype+","+status+",'"+ RandomUtils.getRandomDate()+"','"+ RandomUtils.getRandomDate()+"','"+wnId+"')";
+                    String insertSql = "insert into src_user_contacts(USER_ID,CONTACTS_NAME,CERTIFICATE_TYPE,CERTIFACATE_NUMBER,PASSENGER_TYPE,STATUS,LAST_BUYTICKET_TIME,CREATE_TIME,WN_ID) value("+userId+",'"+realName+"',"+ctype+",'"+cnum+"',"+ptype+","+status+",'"+ RandomUtils.getStringRandomDate()+"','"+ RandomUtils.getStringRandomDate()+"','"+wnId+"')";
                     insertStmt.execute(insertSql);
                     count++;
                     System.out.println("正在插入第"+count+"条数据!");
