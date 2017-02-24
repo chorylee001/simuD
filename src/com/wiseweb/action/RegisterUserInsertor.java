@@ -1,7 +1,7 @@
 package com.wiseweb.action;
 
 import com.mysql.jdbc.StringUtils;
-import com.wiseweb.util.DBConnector;
+import com.wiseweb.util.HbaseBase;
 import com.wiseweb.util.PhoneGenerator;
 import com.wiseweb.util.RandomUtils;
 
@@ -13,23 +13,25 @@ import java.sql.*;
  */
 public class RegisterUserInsertor {
 
-    static DBConnector connector = null;
-    public static void main(String[] args) {
-
-        insertDeportPrice();
-    }
-
-    private static void insertDeportPrice() {
-        connector = new DBConnector();//创建DBConnector对象
+    /**
+     *
+     * @param conn
+     * @param pc 新增用户数量
+     */
+    public static int run(Connection conn,Integer pc) {
         Statement stmt;
         ResultSet rs;
         int count = 1;
+        if(pc == null || pc<=0){
+            pc = 10000;
+        }
         //查询SQL
-        String sql = "select USER_ID,USER_NAME,NAME,CERTIFICATE_CODE,BIRTHDAY FROM BAS_POPULATION_INFO";
+        HbaseBase base = new HbaseBase();
+        base.getDataMap("BAS_POPULATION_INFO","","",1,pc);
+
+        String sql = "select USER_ID,USER_NAME,NAME,CERTIFICATE_CODE,BIRTHDAY FROM BAS_POPULATION_INFO order BY id limit "+pc;
         //插入SQL
         try {
-            //获取连接
-            Connection conn = connector.getConn();
             //创建连接声明
             stmt = conn.createStatement();
             //执行查询
@@ -56,12 +58,13 @@ public class RegisterUserInsertor {
             //关闭连接
             rs.close();
             stmt.close();
-            connector.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }catch (NumberFormatException nfe){
             nfe.printStackTrace();
         }
+        return count;
     }
 
     private static java.sql.Date getDate(){

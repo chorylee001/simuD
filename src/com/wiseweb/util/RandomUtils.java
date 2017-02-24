@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Chory on 2017/2/16 0016.
@@ -75,7 +76,8 @@ public class RandomUtils {
         try {
 
             Date start = format.parse(beginDate);//构造开始日期
-            Date end = format.parse(endDate);//构造结束日期
+//            Date end = format.parse(endDate);
+            Date end = new Date();//构造结束日期
             //getTime()表示返回自 1970 年 1 月 1 日 00:00:00 GMT 以来此 Date 对象表示的毫秒数。
             if (start.getTime() >= end.getTime()) {
                 System.out.println("开始时间不得小于结束时间.");
@@ -146,16 +148,18 @@ public class RandomUtils {
     }
 
     public static void main(String[] args) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        for(int i=0;i<=100;i++){
-
-            //String resulttime = format.format(getRandomDate());//构造开始日期
-            /*String resulttime = format.format(new java.sql.Date(getRandomDate().getTime()));
-            System.out.println(resulttime);*/
-            System.out.println(format.format(RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59")));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH小时mm分");
+        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String time = "2017年1月1日 9小时1分";
+        String time2 = "2017年1月1日 10小时52分";
+        try {
+            Date dtime = format.parse(time);
+            Date dtime2 = format.parse(time2);
+            System.out.println("时间2:"+format2.format(dtime2)+",时间1:"+format2.format(dtime));
+            System.out.println((dtime2.getTime()-dtime.getTime())/1000/60);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-
-
     }
 
     public static String getOrderNo() {
@@ -165,5 +169,21 @@ public class RandomUtils {
         orderNo = trandNo.toString().substring(0, 4);
         orderNo = orderNo + sdf;
         return orderNo;
+    }
+
+    public static String getdByUUId() {
+
+       /* int machineId = 1;
+        int hashCodeV = UUID.randomUUID().toString().hashCode();
+        //hashCode为负数转为正数
+        if(hashCodeV < 0) {
+            hashCodeV = - hashCodeV;
+        }
+        // 0 代表前面补充0 15代表长度为15+1 d代表参数为正数型
+        return machineId + String.format("%015d", hashCodeV);*/
+
+        String id = UUID.randomUUID().toString();
+        id = id.replace("-", "");
+        return id;
     }
 }

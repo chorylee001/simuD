@@ -1,6 +1,5 @@
 package com.wiseweb.action;
 
-import com.wiseweb.util.DBConnector;
 import com.wiseweb.util.RandomUtils;
 
 import java.sql.*;
@@ -11,23 +10,17 @@ import java.sql.*;
  */
 public class UseDeviceUserInsetor {
 
-    static DBConnector connector = null;
+    public static void run(Connection conn,Integer userCount) {
 
-    public static void main(String[] args) {
-
-        insertDeviceUse();
-    }
-
-    private static void insertDeviceUse() {
-        connector = new DBConnector();//创建DBConnector对象
         Statement stmt;
         ResultSet userRs;
         int count = 1;
+        if(userCount == null||userCount <=0){
+            userCount = 5000;
+        }
         //注册用户查询SQL
-        String sql = "select id FROM cr_user";
+        String sql = "select id FROM cr_user ORDER BY id limit "+userCount;
         try {
-            //获取连接
-            Connection conn = connector.getConn();
             //创建连接声明
             stmt = conn.createStatement();
             //执行查询
@@ -46,12 +39,9 @@ public class UseDeviceUserInsetor {
                     System.out.println("已生成" + count + "条设备使用数据!");
                 }
             }
-
-
             //关闭连接
             userRs.close();
             stmt.close();
-            connector.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (NumberFormatException nfe) {

@@ -22,15 +22,17 @@ public class DeviceDataInsertor {
 
     private static DBConnector connector = null;
 
-    public static void main(String[] args) {
+    /**
+     *
+     * @param conn
+     * @param tacImeiCount 每个tac生成imei条数
+     */
+    public static void run(Connection conn, Integer tacImeiCount) {
 
 //        String code = "35254112632400";
 //        String newCode = IMEIGenerator.genCode(code);
 //        String endCode = "35254112633700";
 
-        connector = new DBConnector();
-        //获取所有tac
-        Connection conn = connector.getConn();
         try {
             //查询所有品牌
             Statement tacStmt = conn.createStatement();
@@ -48,12 +50,13 @@ public class DeviceDataInsertor {
                 tacs.add(tacBean);
             }
 
-            //每个tac生成imei条数
-            int tacImeiCount = 3030;
+            if(tacImeiCount == null|| tacImeiCount<=0){
+                tacImeiCount = 1000;
+            }
             System.out.println("开始生成IMEI码...");
             long current = System.currentTimeMillis();
             List imeis = IMEIGenerator.createIMEIByTac(tacs, "632400", tacImeiCount);
-//        List imeis = IMEIGenerator.createIMEI(code,endCode);
+//          List imeis = IMEIGenerator.createIMEI(code,endCode);
             long endtime = System.currentTimeMillis();
             long usetime = endtime - current;
             System.out.println("imei码生成完成," + imeis.size() + "条,共耗时" + usetime + "毫秒");
