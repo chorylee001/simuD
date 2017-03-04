@@ -125,14 +125,44 @@ public class RandomUtils {
         return format.format(RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59"));
     }
 
-    public static String getRandomYMD(){
+    /**
+     * 随机区间
+     * @return
+     */
+    public static String getRandomInsYMD(){
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(RandomUtils.randomDate("2015-01-01 00:00:00", "2017-02-17 23:59:59"));
+        return format.format(RandomUtils.randomDate("2015-01-01 00:00:00", getRandomYMD()+" 23:59:59"));
+    }
+    public static String getRandomInsYMD(String startToday,String endToday){
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(RandomUtils.randomDate(startToday+" 00:00:00", endToday+" 23:59:59"));
+    }
+
+    public static String getRandomInsYMDHMS(String startToday,String endToday){
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return format.format(RandomUtils.randomDate(startToday+" 00:00:00", endToday+" 23:59:59"));
+    }
+
+    /**
+     * 随机年月日
+     * @return
+     */
+    public static String getRandomYMD(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(new Date());
     }
     public static java.sql.Date getDate(){
         java.sql.Date date = new java.sql.Date(new java.util.Date().getTime());
         return date;
+    }
+
+    public static String getTodayTime(){
+        /*SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");*/
+
+        return getRandomInsYMDHMS(getRandomYMD(),getRandomYMD());
     }
 
     public static String randomFormatToStringByString(String ymd,int random) throws ParseException {
@@ -148,17 +178,8 @@ public class RandomUtils {
     }
 
     public static void main(String[] args) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH小时mm分");
-        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String time = "2017年1月1日 9小时1分";
-        String time2 = "2017年1月1日 10小时52分";
-        try {
-            Date dtime = format.parse(time);
-            Date dtime2 = format.parse(time2);
-            System.out.println("时间2:"+format2.format(dtime2)+",时间1:"+format2.format(dtime));
-            System.out.println((dtime2.getTime()-dtime.getTime())/1000/60);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        for(int i =0;i<10;i++){
+            System.out.println(getTodayTime());
         }
     }
 

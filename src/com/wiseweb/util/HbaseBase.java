@@ -21,7 +21,8 @@ public class HbaseBase {
 
     private static Configuration config = null;
     private static HTablePool tp = null;
-    static {
+    private static HConnection conn = null;
+    /*static {
         // 加载集群配置
         config = HBaseConfiguration.create();
         config.set("hbase.master", "10.1.8.186:60010");
@@ -29,6 +30,41 @@ public class HbaseBase {
         config.set("hbase.zookeeper.property.clientPort", "2181");
         // 创建表池
         tp = new HTablePool(config, 10000);
+    }*/
+
+    public HbaseBase() {
+    }
+
+    public HbaseBase(String ip, String clientPort, String port) {
+        // 加载集群配置
+        config = HBaseConfiguration.create();
+//        config.set("hbase.master", ip+":"+port);
+        config.set("hbase.zookeeper.quorum", ip);
+        config.set("hbase.zookeeper.property.clientPort", clientPort);
+        config.set("zookeeper.znode.parent", "/hbase-unsecure");
+        // 创建表池
+        tp = new HTablePool(config, 10000);
+    }
+
+    public static synchronized HConnection getHConnection(String ip, String clientPort, String port) throws IOException
+    {
+        if(conn == null)
+        {
+            conn = HConnectionManager.createConnection(getConfiguration(ip,clientPort));
+        }
+
+        return conn;
+    }
+
+    public static synchronized Configuration getConfiguration(String QUORUM,String CLIENTPORT)
+    {
+        if(config == null)
+        {
+            config =  HBaseConfiguration.create();
+            config.set("hbase.zookeeper.quorum", QUORUM);
+            config.set("hbase.zookeeper.property.clientPort", CLIENTPORT);
+        }
+        return config;
     }
 
     /**
@@ -130,7 +166,7 @@ public class HbaseBase {
         // 为分页创建的封装类对象，下面有给出具体属性
         HbasePageBean pageBean = null;
         try {
-            // 获取最大返回结果数量
+            //获取最大返回结果数量
             if (pageSize == null || pageSize == 0L)
                 pageSize = 100;
 

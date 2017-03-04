@@ -16,27 +16,35 @@ import java.util.*;
  */
 public class OrderInsertor {
 
-    public static void run(Connection conn) {
+    /**
+     * 订单生成
+     * @param conn
+     * @param oc 订单数量
+     */
+    public static void run(Connection conn,Integer oc) {
 
         Statement stmt;
         ResultSet userRs;
         int count = 1;
+        if (oc == null || oc ==0) {
+            oc = 10000;
+        }
         //注册用户查询SQL
-        String sql = "select id FROM cr_user";
-        //插入SQL
+        String sql = "select id FROM cr_user ORDER BY rand() limit 1000,"+oc;
         try {
             //创建连接声明
             stmt = conn.createStatement();
             //执行查询
             userRs = stmt.executeQuery(sql);
-            //一个注册用户2016年下单1-5次
+            //一个注册用户2016年下单1-10次
             while (userRs.next()) {
 
                 //车票数据生成
-                int randomTicket = (int) (Math.random() * 5 + 1);
+                int randomTicket = (int) (Math.random() * 10 + 1);
                 double allPrice = 0;
                 for (int i = 0; i < randomTicket; i++) {
 
+                    //车票生成
                     Map tickets = ticketInsert(conn, userRs);
                     Iterator iterator = tickets.keySet().iterator();
                     List<Integer> ticketIds = new ArrayList<>();
@@ -55,7 +63,7 @@ public class OrderInsertor {
                     Integer userId = userRs.getInt("id");
                     ResultSet orderRs;
                     String orderNo = RandomUtils.getOrderNo();
-                    int row = insertStmt.executeUpdate("INSERT INTO cr_data_order (ORDER_NUMBER,USER_ID,ORDER_TIME,ORDER_STATUS,SUM_PRICE,PAYMENT,ORDER_CHANNEL,PAY_STATUS,PAY_BANK,PAY_APP) VALUES ('" + orderNo + "'," + userId + ",'" + RandomUtils.getStringRandomDate() + "'," + (int) (Math.random() * 3) + "," + allPrice + "," + (int) (Math.random() * 8 + 1) + ",1," + (Math.random() > 0.5 ? 1 : 0) + "," + (int) (Math.random() * 7 + 1) + "," + (int) (Math.random() * 4 + 1) + ")", Statement.RETURN_GENERATED_KEYS);
+                    int row = insertStmt.executeUpdate("INSERT INTO cr_data_order (ORDER_NUMBER,USER_ID,ORDER_TIME,ORDER_STATUS,SUM_PRICE,PAYMENT,ORDER_CHANNEL,PAY_STATUS,PAY_BANK,PAY_APP) VALUES ('" + orderNo + "'," + userId + ",'" + RandomUtils.getTodayTime() + "'," + (int) (Math.random() * 3) + "," + allPrice + "," + (int) (Math.random() * 8 + 1) + ",1," + (Math.random() > 0.7 ? 0 : 1) + "," + (int) (Math.random() * 7 + 1) + "," + (int) (Math.random() * 4 + 1) + ")", Statement.RETURN_GENERATED_KEYS);
 
                     Integer orderId = null;
                     orderRs = insertStmt.getGeneratedKeys();
@@ -75,18 +83,17 @@ public class OrderInsertor {
 
                         //订单详情表插入
                         Statement ODetailStmt = conn.createStatement();
-                        String insertODetailSql = "insert into cr_data_order_detail(ORDER_ID,TICKET_ID,OPERATE_TIME) values(" + orderId + "," + ticketId + ",'" + RandomUtils.getStringRandomDate() + "')";
+                        String insertODetailSql = "insert into cr_data_order_detail(ORDER_ID,TICKET_ID,OPERATE_TIME) values(" + orderId + "," + ticketId + ",'" + RandomUtils.getTodayTime() + "')";
                         ODetailStmt.execute(insertODetailSql);
                         ODetailStmt.close();
                     }
                     //交易流水数据生成
                     Statement ofStmt = conn.createStatement();
-                    String ofInsert = "insert into cr_data_order_flow(PAY_SERIALS_NUMBER,USER_ID,ORDER_NUMBER,DEAL_TYPE,DEAL_SERIALS_NUMBER,DEAL_STATUS,AMOUNT,PAYMENT,DEAL_SOURCE,DEAL_TIME) values('" + RandomUtils.getOrderNo() + "'," + userId + ",'" + orderNo + "'," + (int) (Math.random() * 4 + 1) + ",'" + RandomUtils.getOrderNo() + "'," + (Math.random() > 0.2 ? 1 : 0) + "," + allPrice + "," + (int) (Math.random() * 8 + 1) + ",1,'" + RandomUtils.getDate() + "')";
+                    String ofInsert = "insert into cr_data_order_flow(PAY_SERIALS_NUMBER,USER_ID,ORDER_NUMBER,DEAL_TYPE,DEAL_SERIALS_NUMBER,DEAL_STATUS,AMOUNT,PAYMENT,DEAL_SOURCE,DEAL_TIME) values('" + RandomUtils.getOrderNo() + "'," + userId + ",'" + orderNo + "'," + (int) (Math.random() * 4 + 1) + ",'" + RandomUtils.getOrderNo() + "'," + (Math.random() > 0.2 ? 1 : 0) + "," + allPrice + "," + (int) (Math.random() * 8 + 1) + ",1,'" + RandomUtils.getTodayTime() + "')";
                     ofStmt.execute(ofInsert);
-                    System.out.println("正在插入第" + count + "条订单交易流水数据!");
                     count++;
-
                 }
+                System.out.println("完成插入" + count + "条订单交易流水数据!");
             }
             //关闭连接
             userRs.close();
@@ -151,7 +158,7 @@ public class OrderInsertor {
                 String depotQueryByTrainname = "select * from cr_depot_basic_info binfo where binfo.TRAIN_NAME='" + startDepot.getTrainName() + "' and station_no>" + startDepot.getStationNum();
                 ResultSet nextDepotRs = depotQueryStmt.executeQuery(depotQueryByTrainname);
                 List<DepotBean> nextDepots = getAllDepotBean(nextDepotRs);
-                if (nextDepots != null && nextDepots.size() == 0) {
+                if (nextDepots == null || nextDepots.size() == 0) {
                     break;
                 }
                 //下车车站站次查询关闭
@@ -219,6 +226,9 @@ public class OrderInsertor {
                 //创建车票数据插入连接声明
                 Statement insertStmt = conn.createStatement();
 
+                //随机生成线下车票线上,线下:线下= 7:3
+                boolean isOnline = Math.random()>0.6?true:false;
+
                 //是否购买保险，8:2
                 boolean isPolicy = Math.random() > 0.2 ? false : true;
                 //保单编号
@@ -238,9 +248,15 @@ public class OrderInsertor {
                     ticketPrice = ticketPrice + policyPrice;
                 }
                 //乘车日期
-                String rideTime = RandomUtils.getRandomYMD();
+                String rideTime = RandomUtils.getRandomInsYMD();
+
+                //电子票号
+                String elecTicketNo = "";
+                if(isOnline){
+                    elecTicketNo = RandomUtils.getOrderNo();
+                }
                 //插入数据sql
-                String insertSql = "insert INTO src_ticket_info(ELEC_TICKET_ID,PAPER_TICKET_ID,CERTIFICATE_TYPE,CERTIFICATE_NUMBER,WN_ID,NAME,ORDER_NUMBER,TICKET_PRICE,TRAIN_NAME,SEAT_LEVEL,IS_DISCOUNT,INSURANCE_ID,SEAT_NUMBER,BUNK,RIDE_DATA,DEPARTURE_TIME,DEPARTURE,ARRIVAL,BUY_WAY,TICKET_STATUS,FETCH_TICKET_TIME,TICKET_DELIVERY,TICKET_PRINT_STATUS,TICKET_CATEGORY) VALUES ('" + RandomUtils.getOrderNo() + "','" + RandomUtils.getOrderNo() + "','" + ctype + "','" + cnum + "','" + wnid + "','" + contactsName + "','" + RandomUtils.getOrderNo() + "','" + ticketPrice + "','" + startDepot.getTrainName() + "'," + seatLevel + "," + isDiscount + ",'" + policyNo + "','" + (int) (Math.random() * 120 + 1) + "','" + bunk + "','" + rideTime + "','" + rideTime + " " + startDepot.getDepartureTime() + "','" + startDepot.getStationName() + "','" + endDepot.getStationName() + "',1," + Math.random() * 8 + 1 + ",'" + RandomUtils.randomFormatToStringByString(rideTime, (int) (Math.random() * 10)) + "'," + (int) (Math.random() * 3 + 1) + ",1," + ptype + ")";
+                String insertSql = "insert INTO src_ticket_info(ELEC_TICKET_ID,PAPER_TICKET_ID,CERTIFICATE_TYPE,CERTIFICATE_NUMBER,WN_ID,NAME,ORDER_NUMBER,TICKET_PRICE,TRAIN_NAME,SEAT_LEVEL,IS_DISCOUNT,INSURANCE_ID,SEAT_NUMBER,BUNK,RIDE_DATA,DEPARTURE_TIME,DEPARTURE,ARRIVAL,BUY_WAY,TICKET_STATUS,FETCH_TICKET_TIME,TICKET_DELIVERY,TICKET_PRINT_STATUS,TICKET_CATEGORY) VALUES ('" + elecTicketNo + "','" + RandomUtils.getOrderNo() + "','" + ctype + "','" + cnum + "','" + wnid + "','" + contactsName + "','" + RandomUtils.getOrderNo() + "','" + ticketPrice + "','" + startDepot.getTrainName() + "'," + seatLevel + "," + isDiscount + ",'" + policyNo + "','" + (int) (Math.random() * 120 + 1) + "','" + bunk + "','" + rideTime + "','" + rideTime + " " + startDepot.getDepartureTime() + "','" + startDepot.getStationName() + "','" + endDepot.getStationName() + "','"+(isOnline?1:0)+"'," + (int)(Math.random() * 8 + 1) + ",'" + RandomUtils.randomFormatToStringByString(rideTime, (int) (Math.random() * 10)) + "'," + (int) (Math.random() * 3 + 1) + ",1," + ptype + ")";
                 int row = insertStmt.executeUpdate(insertSql, insertStmt.RETURN_GENERATED_KEYS);
                 int ticketId = 0;
                 ResultSet ticketRs = insertStmt.getGeneratedKeys();
@@ -249,7 +265,10 @@ public class OrderInsertor {
                 }
                 System.out.println("正在插入第" + ticketId + "条车票数据!");
                 insertStmt.close();
-
+                if(isOnline){
+                    i--;
+                    break;
+                }
                 if (isPolicy) {
                     //保单生成
                     Statement policyStatement = conn.createStatement();

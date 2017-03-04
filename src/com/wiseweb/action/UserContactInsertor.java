@@ -1,7 +1,6 @@
 package com.wiseweb.action;
 
 import com.wiseweb.entity.PopulationBean;
-import com.wiseweb.util.DBConnector;
 import com.wiseweb.util.RandomUtils;
 
 import java.sql.*;
@@ -14,15 +13,8 @@ import java.util.List;
  */
 public class UserContactInsertor {
 
-    static DBConnector connector = null;
-    public static void main(String[] args) {
+    public static void run(Connection conn) {
 
-        insertContact();
-    }
-
-    private static void insertContact() {
-
-        connector = new DBConnector();
         Statement stmt;
         ResultSet rs;
         int count = 1;
@@ -30,8 +22,6 @@ public class UserContactInsertor {
         String sql = "SELECT ID FROM cr_user";
         //插入SQL
         try {
-            //获取连接
-            Connection conn = connector.getConn();
             //创建注册用户连接声明
             stmt = conn.createStatement();
             //执行查询
@@ -95,10 +85,10 @@ public class UserContactInsertor {
                     int status = Math.random()>0.2?1:0;
                     String wnId = bean.getWnId();
                     //插入数据sql
-                    String insertSql = "insert into src_user_contacts(USER_ID,CONTACTS_NAME,CERTIFICATE_TYPE,CERTIFACATE_NUMBER,PASSENGER_TYPE,STATUS,LAST_BUYTICKET_TIME,CREATE_TIME,WN_ID) value("+userId+",'"+realName+"',"+ctype+",'"+cnum+"',"+ptype+","+status+",'"+ RandomUtils.getStringRandomDate()+"','"+ RandomUtils.getStringRandomDate()+"','"+wnId+"')";
+                    String insertSql = "insert into src_user_contacts(USER_ID,CONTACTS_NAME,CERTIFICATE_TYPE,CERTIFICATE_NUMBER,PASSENGER_TYPE,STATUS,LAST_BUYTICKET_TIME,CREATE_TIME,WN_ID) value("+userId+",'"+realName+"',"+ctype+",'"+cnum+"',"+ptype+","+status+",'"+ RandomUtils.getStringRandomDate()+"','"+ RandomUtils.getStringRandomDate()+"','"+wnId+"')";
                     insertStmt.execute(insertSql);
                     count++;
-                    System.out.println("正在插入第"+count+"条数据!");
+                    System.out.println("正在插入第"+count+"条相关联系人数据!");
                 }
 
                 insertStmt.close();
@@ -106,7 +96,6 @@ public class UserContactInsertor {
             //关闭连接
             rs.close();
             stmt.close();
-            connector.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }catch (NumberFormatException nfe){

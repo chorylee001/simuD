@@ -3,15 +3,12 @@ package com.wiseweb.action;
 import com.wiseweb.entity.TACBean;
 import com.wiseweb.util.*;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Chory on 2017/2/7 0007.
@@ -22,9 +19,15 @@ public class DeviceDataInsertor {
 
     private static DBConnector connector = null;
 
+    public static void main(String[] args) {
+        connector = new DBConnector();
+        Connection conn = connector.getConn();
+        run(conn,1);//1220000*165~2Y  220000
+    }
+
     /**
      *
-     * @param conn
+     * @param
      * @param tacImeiCount 每个tac生成imei条数
      */
     public static void run(Connection conn, Integer tacImeiCount) {
@@ -66,58 +69,48 @@ public class DeviceDataInsertor {
             //生成tac个数*每个tac生成imei条数
             List<String> macs = MACGenerator.getMacAdr("00:70:A4:00:00:00", tacs.size() * tacImeiCount);
             endtime = System.currentTimeMillis();
-            usetime = endtime - current;
             System.out.println("mac地址生成完成！" + macs.size() + "条,共耗时" + usetime + "毫秒");
 
-            System.out.println("开始写入文件...");
             current = System.currentTimeMillis();
-            List exportData = new ArrayList<Map>();
             int ac = 0, ic = 0;//ios计数器;android计数器;windows phone计数器（no use）
+            String insertSql = "";
+            String OSType = "";
+            String OSVersion = "";
+            Statement insStmt = conn.createStatement();
             for (int i = 0; i < tacs.size() * tacImeiCount; i++) {
-                Map row = new LinkedHashMap<String, String>();
-                row.put("1", i + 1);
-                row.put("2", imeis.get(i));
-                row.put("3", macs.get(i));
+
+
                 //占有比66:28:3
                 if (ac <= 66) {
-                    row.put("4", OSVersionGenerator.osType[0]);
+                    OSType = OSVersionGenerator.osType[0];
                     ac++;
                     if (ac == 66) {
                         ic = 0;
                     }
-                    row.put("5", OSVersionGenerator.getAndroidVersion());
-
+                    OSVersion = OSVersionGenerator.getAndroidVersion();
                 } else if (ic <= 28) {
-                    row.put("4", OSVersionGenerator.osType[1]);
-                    row.put("5", OSVersionGenerator.getIOSVersion());
+                    OSType = OSVersionGenerator.osType[1];
+                    OSVersion = OSVersionGenerator.getIOSVersion();
                     ic++;
                 } else {
-                    row.put("4", OSVersionGenerator.osType[2]);
-                    row.put("5", OSVersionGenerator.getWPVersion());
+                    OSType = OSVersionGenerator.osType[2];
+                    OSVersion = OSVersionGenerator.getWPVersion();
                     ac = 0;
                 }
-
-                row.put("6", ResolutionGenerator.getResolution());
-                row.put("7", System.currentTimeMillis());
-                exportData.add(row);
+                insertSql = "insert into cr_data_device(IMEI,MAC,OS_TYPE,OS_VERSION,RESOLUTION_VIDEO,IS_USED,UPDATE_TIME) values('"+imeis.get(i)+"','"+macs.get(i)+"','"+OSType+"','"+OSVersion+"','"+ResolutionGenerator.getResolution()+"',0,'"+System.currentTimeMillis()+"')";
+                insStmt.execute(insertSql);
             }
-            LinkedHashMap map = new LinkedHashMap();
-            map.put("1", "ID");
-            map.put("2", "IMEI");
-            map.put("3", "MAC");
-            map.put("4", "OS_TYPE");
-            map.put("5", "OS_VERSION");
-            map.put("6", "RESOLUTION_VIDEO");
-            map.put("7", "UPDATE_TIME");
-
-            String path = "D:\\export";//"/mnt/disk3/";//
+            usetime = endtime - current;
+            System.out.println("设备属性数据生成完成,共耗时" + usetime + "毫秒");
+            /*String path = "D:\\export";//"/mnt/disk3/";//
             String fileName = "deviceData";
             File file = CSVUtils.createCSVFile(exportData, map, path, fileName);
             endtime = System.currentTimeMillis();
             usetime = endtime - current;
             System.out.println("文件写入完成," + exportData.size() + "行,共耗时" + usetime + "毫秒");
             String fileName2 = file.getName();
-            System.out.println("文件名称：" + fileName2);
+            System.out.println("文件名称：" + fileName2);*/
+            insStmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

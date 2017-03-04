@@ -12,12 +12,12 @@ import java.sql.SQLException;
  */
 public class DBConnector {
 
-    public static final String url = "jdbc:mysql://127.0.0.1/cr?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=TRUE";//10.1.8.189
-    public static final String name = "com.mysql.jdbc.Driver";
-    /*private static final String url="jdbc:hive://192.168.X.X:10000/default";
-    private static final String name="org.apache.Hadoop.hive.jdbc.HiveDriver";*/
-    private static final String user = "root";
-    private static final String password = "123123";
+    //public static final String url = "jdbc:mysql://127.0.0.1/cr?useUnicode=true&characterEncoding=utf8&autoReconnect=true&rewriteBatchedStatements=TRUE";//10.1.8.189
+    //public static final String name = "com.mysql.jdbc.Driver";
+    private static final String url="jdbc:hive://192.168.X.X:10000/default";
+    private static final String name="org.apache.Hadoop.hive.jdbc.HiveDriver";
+    private static final String user = "";
+    private static final String password = "";
 
     private Connection conn = null;
     public PreparedStatement ps = null;
@@ -63,6 +63,7 @@ public class DBConnector {
             conn = DriverManager.getConnection(url, username, password);
         } catch(MySQLNonTransientConnectionException tce){
             System.out.println("尝试着连接了3次，没有成功，放弃吧！");
+            tce.printStackTrace();
         }catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
