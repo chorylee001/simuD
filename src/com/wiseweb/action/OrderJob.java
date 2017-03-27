@@ -1,5 +1,6 @@
 package com.wiseweb.action;
 
+import com.wiseweb.other.data.model.GenerateUserInfo;
 import com.wiseweb.util.DBConnector;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -32,6 +33,20 @@ public class OrderJob implements Job{
                 System.out.println("数据库连接失败,请检查连接后重试!");
                 System.exit(0);
             }
+
+            //设备属性数据生成
+            DeviceDataInsertor deviceDataInsertor = new DeviceDataInsertor();
+            deviceDataInsertor.run(conn, 610000);
+
+            //基本人口属性数据生成
+            GenerateUserInfo.run(conn, oc);
+
+            //注册用户生成
+            RegisterUserInsertor registerUser = new RegisterUserInsertor();
+            int regCount = registerUser.run(conn,373762);
+            //相关联系人生成
+            UserContactInsertor userContactInsertor = new UserContactInsertor();
+            userContactInsertor.run(conn);
 
             //设备使用数据生成
             UseDeviceUserInsertor useDeviceUserInsetor = new UseDeviceUserInsertor();

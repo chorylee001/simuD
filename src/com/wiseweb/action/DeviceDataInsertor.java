@@ -1,6 +1,7 @@
 package com.wiseweb.action;
 
 import com.wiseweb.entity.TACBean;
+import com.wiseweb.thread.DeviceData;
 import com.wiseweb.util.*;
 
 import java.sql.Connection;
@@ -57,51 +58,19 @@ public class DeviceDataInsertor {
                 tacImeiCount = 1000;
             }
             System.out.println("开始生成IMEI码...");
-            long current = System.currentTimeMillis();
-            List imeis = IMEIGenerator.createIMEIByTac(tacs, "632400", tacImeiCount);
-//          List imeis = IMEIGenerator.createIMEI(code,endCode);
-            long endtime = System.currentTimeMillis();
-            long usetime = endtime - current;
-            System.out.println("imei码生成完成," + imeis.size() + "条,共耗时" + usetime + "毫秒");
+            List<String> imeis = IMEIGenerator.createIMEIByTac(tacs, "632400", tacImeiCount);
+            System.out.println("imei码生成完成," + imeis.size() + "条");
 
             System.out.println("开始生成mac地址...");
-            current = System.currentTimeMillis();
             //生成tac个数*每个tac生成imei条数
             List<String> macs = MACGenerator.getMacAdr("00:70:A4:00:00:00", tacs.size() * tacImeiCount);
-            endtime = System.currentTimeMillis();
-            System.out.println("mac地址生成完成！" + macs.size() + "条,共耗时" + usetime + "毫秒");
+            System.out.println("mac地址生成完成！" + macs.size() + "条");
 
-            current = System.currentTimeMillis();
-            int ac = 0, ic = 0;//ios计数器;android计数器;windows phone计数器（no use）
-            String insertSql = "";
-            String OSType = "";
-            String OSVersion = "";
-            Statement insStmt = conn.createStatement();
-            for (int i = 0; i < tacs.size() * tacImeiCount; i++) {
+            Statement inst = conn.createStatement();
+            DeviceData deviceData = new DeviceData(macs,imeis,tacImeiCount,inst);
+            deviceData.run();
+            inst.close();
 
-
-                //占有比66:28:3
-                if (ac <= 66) {
-                    OSType = OSVersionGenerator.osType[0];
-                    ac++;
-                    if (ac == 66) {
-                        ic = 0;
-                    }
-                    OSVersion = OSVersionGenerator.getAndroidVersion();
-                } else if (ic <= 28) {
-                    OSType = OSVersionGenerator.osType[1];
-                    OSVersion = OSVersionGenerator.getIOSVersion();
-                    ic++;
-                } else {
-                    OSType = OSVersionGenerator.osType[2];
-                    OSVersion = OSVersionGenerator.getWPVersion();
-                    ac = 0;
-                }
-                insertSql = "insert into cr_data_device(IMEI,MAC,OS_TYPE,OS_VERSION,RESOLUTION_VIDEO,IS_USED,UPDATE_TIME) values('"+imeis.get(i)+"','"+macs.get(i)+"','"+OSType+"','"+OSVersion+"','"+ResolutionGenerator.getResolution()+"',0,'"+System.currentTimeMillis()+"')";
-                insStmt.execute(insertSql);
-            }
-            usetime = endtime - current;
-            System.out.println("设备属性数据生成完成,共耗时" + usetime + "毫秒");
             /*String path = "D:\\export";//"/mnt/disk3/";//
             String fileName = "deviceData";
             File file = CSVUtils.createCSVFile(exportData, map, path, fileName);
@@ -110,7 +79,6 @@ public class DeviceDataInsertor {
             System.out.println("文件写入完成," + exportData.size() + "行,共耗时" + usetime + "毫秒");
             String fileName2 = file.getName();
             System.out.println("文件名称：" + fileName2);*/
-            insStmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

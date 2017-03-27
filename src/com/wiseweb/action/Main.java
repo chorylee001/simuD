@@ -85,7 +85,7 @@ public class Main {
 
     private static void orderJobRun(String time){
         OrderJob job = new OrderJob();
-        String job_name ="order generator job";
+        String job_name ="huaxiang_job";
         try {
             System.out.println("订单数据开始生成...");
             QuartzManager.addJob(job_name,job,time);
